@@ -26,7 +26,7 @@ This module is intended to create and manage client devices (unifi_user) on a Un
   
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_client"></a> [client](#input\_client) | 'var.client' is the main variable for unifi_user and unifi_account resources' attributes | <pre>type        = object({<br>  mac                     = string<br>  name                    = string<br>  allow_existing          = optional(bool, true)<br>  blocked                 = optional(bool, false)<br>  dev_id_override         = optional(number,null)<br>  fixed_ip                = optional(string, null)<br>  local_dns_record        = optional(string, null)<br>  network_id              = optional(string, null)<br>  note                    = optional(string, null)<br>  site                    = optional(string, null)<br>  skip_forget_on_destroy  = optional(bool, false)<br>  user_group_id           = optional(string, null)<br>})</pre> | none | yes |
+| <a name="input_client"></a> [client](#input\_client) | 'var.client' is the main variable for unifi_user and unifi_account resources' attributes | <pre>type          = object({<br>  mac                     = string<br>  name                    = string<br>  network                 = optional(string, null)<br>  site                    = optional(string, null)<br>  user                    = optional(object({<br>    allow_existing          = optional(bool, null)<br>    blocked                 = optional(bool, null)<br>    dev_id_override         = optional(number, null)<br>    fixed_ip                = optional(string, null)<br>    local_dns_record        = optional(string, null)<br>    note                    = optional(string, null)<br>    skip_forget_on_destroy  = optional(bool, null)<br>    user_group              = optional(string, null)<br>  }), {})<br>  account                 = optional(object({<br>    enabled                 = optional(bool, true)<br>    tunnel_medium_type      = optional(number, null)<br>    tunnel_type             = optional(number, null)<br>  }), { enabled = false })<br>})</pre> | none | yes |
 
 #### Notes
   
@@ -134,7 +134,7 @@ module "client" {
 | Name | Description |
 |------|-------------|
 | <a name="output_unif_user"></a> [unifi\_user](#output\_unifi\_user) | list of all exported attributes values from the <code>unifi_user</code> resources (Client device)  |
-| <a name="output_unif_account"></a> [unifi\_account](#output\_unifi\_account) | list of all exported attributes values from the <code>unifi_account</code> resources (RADIUS acocunt)  |
+| <a name="output_unif_account"></a> [unifi\_account](#output\_unifi\_account) | list of all exported attributes values from the <code>unifi_account</code> resources (RADIUS account)  |
 
   
 ### Known Issues
