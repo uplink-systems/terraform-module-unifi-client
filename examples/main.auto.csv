@@ -1,0 +1,3 @@
+mac,name,allow_existing,blocked,dev_id_override,fixed_ip,local_dns_record,network,note,site,skip_forget_on_destroy,user_group,tunnel_medium_type,tunnel_type
+01:23:45:67:89:AB,desktop_003,true,false,false,192.168.1.102,xyz.domain.com,,my 1st comment,UiSite4,false,Default,6,13
+AB:01:23:45:67:89,laptop_004,true,false,false,192.168.2.101,abc.domain.com,vlan_0011,my 2nd comment,UiSite3,false,Default,null,null
