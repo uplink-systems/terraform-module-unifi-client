@@ -82,14 +82,3 @@ module "clients_csv" {
     tunnel_type               = each.value.tunnel_type
   }
 }
-
-
-
-# # via direct resource...
-# resource "unifi_user" "user" {
-#   for_each = local.users
-#   mac       = each.key
-#   name      = each.value.name
-#   # append an optional additional note
-#   note      = trimspace("${each.value.note}\n\nmanaged by TF")    # append an optional additional note
-# }
