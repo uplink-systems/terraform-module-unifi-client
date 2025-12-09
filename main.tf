@@ -19,8 +19,8 @@ resource "unifi_user" "user" {
 
 resource "unifi_account" "account" {
     for_each                = var.client.account.enabled ? [1] : []
-    name                    = upper(trim(var.client.mac, ":"))
-    password                = upper(trim(var.client.mac, ":"))
+    name                    = upper(join("", (split(":", var.client.mac))))
+    password                = upper(join("", (split(":", var.client.mac))))
     network_id              = data.unifi_network.network.id
     site                    = var.client.site == null ? "default" : var.client.site
     tunnel_medium_type      = var.client.account.tunnel_medium_type
