@@ -12,7 +12,7 @@ This module is intended to create and manage client devices (unifi_user) on a Un
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.11.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.12.0 |
 | <a name="requirement_unifi"></a> [ubiquiti-community\/unifi](#requirement\_ubiquiti-commpunity\_unifi) | >= 0.41.3 |
 
 ### Resources
@@ -26,7 +26,7 @@ This module is intended to create and manage client devices (unifi_user) on a Un
   
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_client"></a> [client](#input\_client) | 'var.client' is the main variable for unifi_user and unifi_account resources' attributes | <pre>type          = object({<br>  mac                     = string<br>  name                    = string<br>  network                 = optional(string, null)<br>  site                    = optional(string, null)<br>  user                    = optional(object({<br>    allow_existing          = optional(bool, null)<br>    blocked                 = optional(bool, null)<br>    dev_id_override         = optional(number, null)<br>    fixed_ip                = optional(string, null)<br>    local_dns_record        = optional(string, null)<br>    note                    = optional(string, null)<br>    skip_forget_on_destroy  = optional(bool, null)<br>    user_group              = optional(string, null)<br>  }), {})<br>  account                 = optional(object({<br>    enabled                 = optional(bool, true)<br>    tunnel_medium_type      = optional(number, null)<br>    tunnel_type             = optional(number, null)<br>  }), { enabled = false })<br>})</pre> | none | yes |
+| <a name="input_client"></a> [client](#input\_client) | 'var.client' is the main variable for unifi_user and unifi_account resources' attributes | <pre>type          = object({<br>  mac                     = string<br>  name                    = string<br>  network                 = optional(string, "Default")<br>  site                    = optional(string, "default")<br>  user                    = optional(object({<br>    allow_existing          = optional(bool, null)<br>    blocked                 = optional(bool, null)<br>    dev_id_override         = optional(number, null)<br>    fixed_ip                = optional(string, null)<br>    local_dns_record        = optional(string, null)<br>    note                    = optional(string, null)<br>    skip_forget_on_destroy  = optional(bool, null)<br>    user_group              = optional(string, null)<br>  }), {})<br>  account                 = optional(object({<br>    enabled                 = optional(bool, true)<br>    tunnel_medium_type      = optional(number, 6)<br>    tunnel_type             = optional(number, 13)<br>  }), { enabled = false })<br>})</pre> | none | yes |
 
 #### Notes
   
@@ -73,6 +73,8 @@ The attribute <code>fixed_ip</code> can only be used in environments with a UniF
   
 The attribute <code>local_dns_record</code> can only be used in combination with the <code>fixed_ip</code> attribute. The module validates the dependency and sets the value to <code>null</code>, too, if <code>fixed_ip</code> is null.  
   
+The module uses UniFi's default values for the network name ("Default") and site ("default"). The module fails if these defaults have been changed and no custom values are configured in the root module.  
+  
 <details>
 <summary><b>Using the variables in the root module</b></summary>
 
@@ -82,7 +84,7 @@ The following lines explain how the main variable in the root module has to be d
 ```
 variable "client" {
   description = ""
-  type        = object({
+  type        = map(object({
     mac                     = string
     name                    = string
     network                 = optional(string, null)
@@ -98,33 +100,17 @@ variable "client" {
       user_group              = optional(string, null)
     }
     account                 = optional(object({
+      enabled                 = optional(bool, null)
       tunnel_medium_type      = optional(number, null)
       tunnel_type             = optional(number, null)
     }))
-  })
+  }))
 }
   
 module "client" {
   source                  = "github.com/uplink-systems/terraform-module-unifi-client"
   for_each                = var.client
-  mac                     = each.value.mac
-  name                    = each.value.name
-  site                    = each.value.site
-  network                 = each.value.network
-  user                    = {
-    allow_existing          = each.value.allow_existing
-    blocked                 = each.value.blocked
-    dev_id_override         = each.value.dev_id_override
-    fixed_ip                = each.value.fixe_ip
-    local_dns_record        = each.value.local_dns_record
-    note                    = each.value.note
-    skip_forget_on_destroy  = each.value.skip_forget_on_destroy
-    user_group              = each.value.user_group
-  }
-  account                 = {
-    tunnel_medium_type      = each.value.account.tunnel_medium_type
-    tunnel_type             = each.value.account.tunnel_type
-  }
+  client                  = each.value
 }
 ```
 </details>

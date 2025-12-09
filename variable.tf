@@ -3,12 +3,12 @@
 ###################################################################################################
 
 variable "client" {
-  description   = "Common variable for ressources managed by the unifi_client module"
+  description   = "Common variable for ressources managed by the UniFi client module"
   type          = object({
     mac                     = string
     name                    = string
-    network                 = optional(string, null)
-    site                    = optional(string, null)
+    network                 = optional(string, "Default")
+    site                    = optional(string, "default")
     user                    = optional(object({
       allow_existing          = optional(bool, null)
       blocked                 = optional(bool, null)
@@ -21,8 +21,8 @@ variable "client" {
     }), {})
     account                 = optional(object({
       enabled                 = optional(bool, true)
-      tunnel_medium_type      = optional(number, null)
-      tunnel_type             = optional(number, null)
+      tunnel_medium_type      = optional(number, 6)
+      tunnel_type             = optional(number, 13)
     }), { enabled = false })
   })
   validation {

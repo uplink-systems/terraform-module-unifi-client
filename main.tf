@@ -5,8 +5,8 @@
 resource "unifi_user" "user" {
     mac                     = var.client.mac
     name                    = var.client.name
-    network_id              = var.client.network == null ? null : data.unifi_network.network.id
-    site                    = var.client.site == null ? "default" : var.client.site
+    network_id              = data.unifi_network.network.id
+    site                    = var.client.site
     allow_existing          = var.client.user.allow_existing == null ? true : var.client.user.allow_existing
     blocked                 = var.client.user.blocked == null ? false : var.client.user.blocked
     dev_id_override         = var.client.user.dev_id_override
@@ -18,11 +18,11 @@ resource "unifi_user" "user" {
 }
 
 resource "unifi_account" "account" {
-    for_each                = var.client.account.enabled ? [1] : []
+    count                   = var.client.account.enabled ? 1 : 0
     name                    = upper(join("", (split(":", var.client.mac))))
     password                = upper(join("", (split(":", var.client.mac))))
     network_id              = data.unifi_network.network.id
-    site                    = var.client.site == null ? "default" : var.client.site
+    site                    = var.client.site
     tunnel_medium_type      = var.client.account.tunnel_medium_type
     tunnel_type             = var.client.account.tunnel_type
     depends_on              = [ unifi_user.user ]
