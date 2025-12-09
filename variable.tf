@@ -27,7 +27,7 @@ variable "client" {
   })
   validation {
     # check if var.client.mac contains a valid MAC address
-    condition     = can(regex("^[0-9a-fA-F]{2}([:])[0-9a-fA-F]{2}(\\1[0-9a-fA-F]{2}){4}$", var.client.mac))
+    condition     = can(regex("^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$", var.client.mac))
     error_message = <<-EOF
       Value for 'var.client.mac' is invalid: ${var.client.mac}.
       Must be a valid MAC address in the format 00:1A:2B:3C:4D:5E" or "00:1a:2b:3c:4d:5e" only.
