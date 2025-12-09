@@ -26,11 +26,57 @@ This module is intended to create and manage client devices (unifi_user) on a Un
   
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_client"></a> [client](#input\_client) | 'var.client' is the main variable for unifi_user and unifi_account resources' attributes | <pre>type          = object({<br>  mac                     = string<br>  name                    = string<br>  network                 = optional(string, "Default")<br>  site                    = optional(string, "default")<br>  user                    = optional(object({<br>    allow_existing          = optional(bool, null)<br>    blocked                 = optional(bool, null)<br>    dev_id_override         = optional(number, null)<br>    fixed_ip                = optional(string, null)<br>    local_dns_record        = optional(string, null)<br>    note                    = optional(string, null)<br>    skip_forget_on_destroy  = optional(bool, null)<br>    user_group              = optional(string, null)<br>  }), {})<br>  account                 = optional(object({<br>    enabled                 = optional(bool, true)<br>    tunnel_medium_type      = optional(number, 6)<br>    tunnel_type             = optional(number, 13)<br>  }), { enabled = false })<br>})</pre> | none | yes |
+| <a name="input_client"></a> [client](#input\_client) | 'var.client' is the main variable for unifi_user and unifi_account resources' attributes | <pre>type          = object({<br>  mac                     = string<br>  name                    = string<br>  network                 = optional(string, null)<br>  site                    = optional(string, "default")<br>  user                    = optional(object({<br>    allow_existing          = optional(bool, null)<br>    blocked                 = optional(bool, null)<br>    dev_id_override         = optional(number, null)<br>    fixed_ip                = optional(string, null)<br>    local_dns_record        = optional(string, null)<br>    note                    = optional(string, null)<br>    skip_forget_on_destroy  = optional(bool, null)<br>    user_group              = optional(string, null)<br>  }), {})<br>  account                 = optional(object({<br>    enabled                 = optional(bool, true)<br>    tunnel_medium_type      = optional(number, 6)<br>    tunnel_type             = optional(number, 13)<br>  }), { enabled = false })<br>})</pre> | none | yes |
 
 #### Notes
   
-There are several Terraform provider available for UniFi under active development to select from. This module is based on the provider *ubiquiti-community/unifi*. If your code is based on another UniFi provider (e.g. *filipowm/unifi*, which currently provides more available resources to manage) you need to configure and add the *ubiquiti-community/unifi* provider as an additional (non-default) provider config with a custom local name when using the module:  
+There are several Terraform provider available for UniFi under active development to select from. This module is based on the provider *ubiquiti-community/unifi*. If your code manages resources that are only provided by another provider (e.g. *filipowm/unifi*, which currently provides more available resources to manage) you have to workaround this depending on which provider is the "main" provider.  
+  
+##### Option 1: *ubiquiti-community/unifi* IS the primary provider for UniFi resources
+  
+In this case you need to configure and add the secondary provider as an additional (non-defaul) provider with a custom local name. Non-module resources need to be configured with the *provider* parameter if the primary (*ubiquiti-community/unifi*) provider does not provide the resource type and the secondary provider shall be used instead.  
+
+```
+terraform {
+  required_providers {
+    unifi           = {
+      source  = "ubiquiti-community/unifi"
+      version = ">= 0.41.3"
+    }
+    unifi-secondary-provider  = {
+      <your secondary provider for UniFi resources>
+    }
+  }
+}
+  
+provider "unifi" = {
+  api_key         = ...
+  api_url         = ...
+  ...
+}
+provider "unifi-secondary-provider" = {
+  <your secondary provider's settings>
+}
+  
+module "unifi_client"
+  for_each    = ...
+  source      = ...
+  <Module-specific inputs>
+
+# resource with secondary provider
+resource "unifi_setting_usg" "setting_usg_1"
+  <Resource-specific inputs>
+  provider    = unifi-secondary-provider
+
+# resource with primary provider (*ubiquiti-community/unifi*)
+resource "unifi_setting_usg" "setting_usg_2"
+  <Resource-specific inputs>
+
+```
+
+##### Option 2: *ubiquiti-community/unifi* IS NOT the primary provider for UniFi resources
+
+In this case you need to configure and add the *ubiquiti-community/unifi* provider as an additional (non-default) provider config with a custom local name when using the module. Non-module resources need to be configured with the *provider* parameter only if the secondary (*ubiquiti-community/unifi*) provider shall be used for the resource.    
 
 ```
 terraform {
@@ -38,7 +84,7 @@ terraform {
     unifi           = {
       <your default provider for UniFi resources>
     }
-    unifi-ubiquiti  = {
+    unifi-secondary-provider  = {
       source  = "ubiquiti-community/unifi"
       version = ">= 0.41.3"
     }
@@ -48,19 +94,25 @@ terraform {
 provider "unifi" = {
   <your default provider's settings>
 }
-provider "unifi-ubiquiti" = {
+provider "unifi-secondary-provider" = {
   api_key         = ...
   api_url         = ...
   ...
 }
   
-module "unifi-client"
-  for_each  = ...
-  source    = ...
+module "unifi_client"
+  for_each    = ...
+  source      = ...
   <Module-specific inputs>
-  providers = {
-    unifi     = unifi-ubiquiti
-  }
+
+# resource with default provider
+resource "unifi_setting_usg" "setting_usg_1"
+  <Resource-specific inputs>
+
+# resource with secondary provider (*ubiquiti-community/unifi*)
+resource "unifi_setting_usg" "setting_usg_2"
+  <Resource-specific inputs>
+  provider    = unifi-secondary
 ```
   
 The module can create/manage both, a client device and an associated account for AAA. A UniFi gateway with an enabled built-in RADIUS server must be setup to create associated accounts. Leave the account attributes unconfigured to skip account creation or if a 3rd party gateway is used.  
@@ -73,7 +125,7 @@ The attribute <code>fixed_ip</code> can only be used in environments with a UniF
   
 The attribute <code>local_dns_record</code> can only be used in combination with the <code>fixed_ip</code> attribute. The module validates the dependency and sets the value to <code>null</code>, too, if <code>fixed_ip</code> is null.  
   
-The module uses UniFi's default values for the network name ("Default") and site ("default"). The module fails if these defaults have been changed and no custom values are configured in the root module.  
+The module uses UniFi's default value for the site name ("default"). The module fails if these defaults have been changed and no custom value is configured in the root module.  
   
 <details>
 <summary><b>Using the variables in the root module</b></summary>

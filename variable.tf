@@ -7,7 +7,7 @@ variable "client" {
   type          = object({
     mac                     = string
     name                    = string
-    network                 = optional(string, "Default")
+    network                 = optional(string, null)
     site                    = optional(string, "default")
     user                    = optional(object({
       allow_existing          = optional(bool, null)

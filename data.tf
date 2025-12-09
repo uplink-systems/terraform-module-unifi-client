@@ -3,6 +3,7 @@
 ####################################################################################################
 
 data "unifi_network" "network" {
+    count = var.client.network == null ? 0 : 1
     name  = var.client.network
     site  = var.client.site
 }
