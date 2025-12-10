@@ -6,13 +6,13 @@
 
 ### Description
 
-This module is intended to create and manage client devices (unifi_user) on a Unifi Network Controller. Optionally the module can create an associated account (unifi_account) for authentication/authentication/accounting (AAA) for wired or wireless networks using UniFi gateway's built-in RADIUS server.  
+This module is intended to create and manage client devices (unifi_user) on a Unifi Network Controller. Optionally the module can create an associated account (unifi_account) for authentication/authorization/accounting (AAA) for wired or wireless networks using UniFi gateway's built-in RADIUS server.  
 
 ### Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.12.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.14.0 |
 | <a name="requirement_unifi"></a> [ubiquiti-community\/unifi](#requirement\_ubiquiti-commpunity\_unifi) | >= 0.41.3 |
 
 ### Resources
@@ -28,10 +28,13 @@ This module is intended to create and manage client devices (unifi_user) on a Un
 |------|-------------|------|---------|:--------:|
 | <a name="input_client"></a> [client](#input\_client) | 'var.client' is the main variable for unifi_user and unifi_account resources' attributes | <pre>type          = object({<br>  mac                     = string<br>  name                    = string<br>  network                 = optional(string, null)<br>  site                    = optional(string, "default")<br>  user                    = optional(object({<br>    allow_existing          = optional(bool, null)<br>    blocked                 = optional(bool, null)<br>    dev_id_override         = optional(number, null)<br>    fixed_ip                = optional(string, null)<br>    local_dns_record        = optional(string, null)<br>    note                    = optional(string, null)<br>    skip_forget_on_destroy  = optional(bool, null)<br>    user_group              = optional(string, null)<br>  }), {})<br>  account                 = optional(object({<br>    enabled                 = optional(bool, true)<br>    tunnel_medium_type      = optional(number, 6)<br>    tunnel_type             = optional(number, 13)<br>  }), { enabled = false })<br>})</pre> | none | yes |
 
-#### Notes
+### Notes
   
-There are several Terraform provider available for UniFi under active development to select from. This module is based on the provider *ubiquiti-community/unifi*. If your code manages resources that are only provided by another provider (e.g. *filipowm/unifi*, which currently provides more available resources to manage) you have to workaround this depending on which provider is the "main" provider.  
-  
+There are several Terraform provider available for UniFi under active development to select from. This module is based on the provider *ubiquiti-community/unifi*. If your code manages resources that are only availabe with another provider (e.g. *filipowm/unifi*, which currently provides more available resources to manage) you have to workaround this depending on which provider is the "main" provider (for details expand the following section *Using multiple UniFi provider*).  
+
+<details>
+<summary><b>Using multiple UniFi provider</b></summary>
+
 ##### Option 1: *ubiquiti-community/unifi* IS the primary provider for UniFi resources
   
 In this case you need to configure and add the secondary provider as an additional (non-defaul) provider with a custom local name. Non-module resources need to be configured with the *provider* parameter if the primary (*ubiquiti-community/unifi*) provider does not provide the resource type and the secondary provider shall be used instead.  
@@ -114,16 +117,26 @@ resource "unifi_setting_usg" "setting_usg_2"
   <Resource-specific inputs>
   provider    = unifi-secondary
 ```
+</details>
   
+#####
 The module can create/manage both, a client device and an associated account for AAA. A UniFi gateway with an enabled built-in RADIUS server must be setup to create associated accounts. Leave the account attributes unconfigured to skip account creation or if a 3rd party gateway is used.  
+
+<details>
+<summary><b>Using the <i>client.account</i> parameters</b></summary>
+
+#####
+The *client.account* parameters specify the settings for the *unifi_account* resource. If you want to create an account for RADIUS authentication and VLAN assignment only, you only need to set the parameter *client.account.enable* to *true*. The other required parameter values are configured with matching values for this scenario. If you want to configure another type of *unifi_account* you can specify the related parameters instead; *client.account.enable* is set to *true* automatically in this case.
+</details>
   
-The provider requires that the attributes <code>network_id</code> and <code>user_group_id</code> contain the Unifi-internal ID of the network / user group. However, the name of the objects must be specified in the module variable instead, because it has a built-in feature to "translate" these names to their corresponding IDs using data sources. That's why the variable's attributes in the module are labeled as <code>network</code> and <code>user_group</code> for better understanding.  
+#####
+The provider requires that the attributes <code>network_id</code> and <code>user_group_id</code> contain the UniFi-internal ID of the network / user group. However, the name of the objects must be specified in the module variable instead, because it has a built-in feature to "translate" these names to their corresponding IDs using data sources. That's why the variable's attributes in the module are labeled as <code>network</code> and <code>user_group</code> for better understanding.  
   
-The provided mac address is used for both resources, <code>unifi_user</code> and <code>unifi_account</code>. The module converts the mac address to Unifi's built-in RADIUS server's default format for username/password ("*AABBCCDDEEFF*") for the <code>unifi_account</code> resources.  
+The provided mac address is used for both resources, <code>unifi_user</code> and <code>unifi_account</code>. The module converts the mac address to UniFi's built-in RADIUS server's default format for username/password ("*AABBCCDDEEFF*") for the <code>unifi_account</code> resources.  
   
 The attribute <code>fixed_ip</code> can only be used in environments with a UniFi Gateway or a UniFi layer-3 switch. Otherwise the resource will fail to create if not null.  
   
-The attribute <code>local_dns_record</code> can only be used in combination with the <code>fixed_ip</code> attribute. The module validates the dependency and sets the value to <code>null</code>, too, if <code>fixed_ip</code> is null.  
+The attribute <code>local_dns_record</code> can only be used in combination with the <code>fixed_ip</code> attribute. The module validates the dependency and sets the value to <code>null</code>, too, if <code>fixed_ip</code> is <code>null</code>.  
   
 The module uses UniFi's default value for the site name ("default"). The module fails if these defaults have been changed and no custom value is configured in the root module.  
   
