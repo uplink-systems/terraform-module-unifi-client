@@ -14,7 +14,7 @@ resource "unifi_user" "user" {
     local_dns_record        = var.client.user.fixed_ip == null ? null : var.client.user.local_dns_record
     note                    = var.client.user.note
     skip_forget_on_destroy  = var.client.user.skip_forget_on_destroy == null ? false : var.client.user.skip_forget_on_destroy
-    user_group_id           = var.client.user.user_group == null ? null : data.unifi_user_group.user_group.id
+    user_group_id           = var.client.user.user_group == null ? null : data.unifi_user_group.user_group[0].id
 }
 
 resource "unifi_account" "account" {

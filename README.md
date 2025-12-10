@@ -136,7 +136,7 @@ The provided mac address is used for both resources, <code>unifi_user</code> and
   
 The attribute <code>fixed_ip</code> can only be used in environments with a UniFi Gateway or a UniFi layer-3 switch. Otherwise the resource will fail to create if not null.  
   
-The attribute <code>local_dns_record</code> can only be used in combination with the <code>fixed_ip</code> attribute. The module validates the dependency and sets the value to <code>null</code>, too, if <code>fixed_ip</code> is <code>null</code>.  
+The attribute <code>local_dns_record</code> can only be used in combination with the <code>fixed_ip</code> attribute. To avoid a conflict and error, the module validates the dependency and sets the value to <code>null</code>, too, if <code>fixed_ip</code> is <code>null</code>.  
   
 The module uses UniFi's default value for the site name ("default"). The module fails if these defaults have been changed and no custom value is configured in the root module.  
   
