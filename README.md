@@ -1,12 +1,8 @@
 ## Module 'terraform-module-unifi-client'
 
-> [!NOTE]  
-> This module is currently still in alpha state and not finally released.  
-> Therefore, please use carefully!  
-
 ### Description
 
-This module is intended to create and manage client devices (unifi_user) on a Unifi Network Controller. Optionally the module can create an associated account (unifi_account) for authentication/authorization/accounting (AAA) for wired or wireless networks using UniFi gateway's built-in RADIUS server.  
+This module is intended to create and manage client devices (unifi_user) on a Unifi Network Controller (either stand-alone or hosted on a UCG/UDM) following my business needs and standards. Optionally the module can create an associated account (unifi_account) for authentication/authorization/accounting (AAA) for wired or wireless networks using UniFi gateway's built-in RADIUS server. It's by design not possible to create an account only without creating a device.  
 
 ### Requirements
 
