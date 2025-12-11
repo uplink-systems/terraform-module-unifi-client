@@ -2,7 +2,7 @@
 
 ### Description
 
-This module is intended to create and manage client devices (unifi_user) on a Unifi Network Controller (either stand-alone or hosted on a UCG/UDM) following my business needs and standards. Optionally the module can create an associated account (unifi_account) for authentication/authorization/accounting (AAA) for wired or wireless networks using UniFi gateway's built-in RADIUS server. It's by design not possible to create an account only without creating a device.  
+This module is intended to create and manage <code>unifi_user</code> resources (client devices) on a Unifi Network Controller (either stand-alone or hosted on a UCG/UDM) following my business needs and standards. Optionally the module can create an associated <code>unifi_account</code> resource for authentication/authorization/accounting (AAA) for wired or wireless networks using UniFi gateway's built-in RADIUS server. It's not possible by design to create a <code>unifi_account</code> resource only without creating a related <code>unifi_client</code> resource. The other way round, this dependency also ensures that <code>unifi_account</code> resources are deleted automatically if their related <code>unifi_client</code> resource is deleted.   
 
 ### Requirements
 
