@@ -24,6 +24,13 @@ This module is intended to create and manage <code>unifi_user</code> resources (
 |------|-------------|------|---------|:--------:|
 | <a name="input_client"></a> [client](#input\_client) | 'var.client' is the main variable for unifi_user and unifi_account resources' attributes | <pre>type          = object({<br>  mac                     = string<br>  name                    = string<br>  network                 = optional(string, null)<br>  site                    = optional(string, "default")<br>  user                    = optional(object({<br>    allow_existing          = optional(bool, null)<br>    blocked                 = optional(bool, null)<br>    dev_id_override         = optional(number, null)<br>    fixed_ip                = optional(string, null)<br>    local_dns_record        = optional(string, null)<br>    note                    = optional(string, null)<br>    skip_forget_on_destroy  = optional(bool, null)<br>    user_group              = optional(string, null)<br>  }), {})<br>  account                 = optional(object({<br>    enabled                 = optional(bool, true)<br>    tunnel_medium_type      = optional(number, 6)<br>    tunnel_type             = optional(number, 13)<br>  }), { enabled = false })<br>})</pre> | none | yes |
 
+### Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_unif_user"></a> [unifi\_user](#output\_unifi\_user) | list of all exported attributes values from the <code>unifi_user</code> resources (Client device)  |
+| <a name="output_unif_account"></a> [unifi\_account](#output\_unifi\_account) | list of all exported attributes values from the <code>unifi_account</code> resources (RADIUS account)  |
+
 ### Notes
   
 There are several Terraform provider available for UniFi under active development to select from. This module is based on the provider *ubiquiti-community/unifi*. If your code manages resources that are only availabe with another provider (e.g. *filipowm/unifi*, which currently provides more available resources to manage) you have to workaround this depending on which provider is the "main" provider (for details expand the following section *Using multiple UniFi provider*).  
@@ -126,7 +133,7 @@ The *client.account* parameters specify the settings for the *unifi_account* res
 </details>
   
 #####
-The provider requires that the attributes <code>network_id</code> and <code>user_group_id</code> contain the UniFi-internal ID of the network / user group. However, the name of the objects must be specified in the module variable instead, because it has a built-in feature to "translate" these names to their corresponding IDs using data sources. That's why the variable's attributes in the module are labeled as <code>network</code> and <code>user_group</code> for better understanding.  
+The provider requires that the attributes <code>network_id</code> and <code>user_group_id</code> contain the UniFi-internal ID of the network / user group. However, the name of the objects must be specified in the module variable instead, because it has a built-in feature to transform these names to their corresponding IDs using data sources. That's why the variable's attributes in the module are labeled as <code>network</code> and <code>user_group</code> for better understanding.  
   
 The provided mac address is used for both resources, <code>unifi_user</code> and <code>unifi_account</code>. UniFi currently allows several formats for WiFi MAC authentication but only one format for 802.1x control ("*AABBCCDDEEFF*"). To setup and use <code>unifi_account</code> resources for both, wired and wireless MAC authentication, the module converts the mac address to this format for username/password.  
   
@@ -175,14 +182,6 @@ module "client" {
 }
 ```
 </details>
-  
-### Outputs
-
-| Name | Description |
-|------|-------------|
-| <a name="output_unif_user"></a> [unifi\_user](#output\_unifi\_user) | list of all exported attributes values from the <code>unifi_user</code> resources (Client device)  |
-| <a name="output_unif_account"></a> [unifi\_account](#output\_unifi\_account) | list of all exported attributes values from the <code>unifi_account</code> resources (RADIUS account)  |
-
   
 ### Known Issues
   

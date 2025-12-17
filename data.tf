@@ -9,7 +9,7 @@ data "unifi_network" "network" {
 }
 
 data "unifi_user_group" "user_group" {
-    count = var.client.network == null ? 0 : 1
+    count = var.client.user.user_group == null ? 0 : 1
     name  = var.client.user.user_group
     site  = var.client.site
 }
