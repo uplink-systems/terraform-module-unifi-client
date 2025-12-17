@@ -128,7 +128,7 @@ The *client.account* parameters specify the settings for the *unifi_account* res
 #####
 The provider requires that the attributes <code>network_id</code> and <code>user_group_id</code> contain the UniFi-internal ID of the network / user group. However, the name of the objects must be specified in the module variable instead, because it has a built-in feature to "translate" these names to their corresponding IDs using data sources. That's why the variable's attributes in the module are labeled as <code>network</code> and <code>user_group</code> for better understanding.  
   
-The provided mac address is used for both resources, <code>unifi_user</code> and <code>unifi_account</code>. The module converts the mac address to UniFi's built-in RADIUS server's default format for username/password ("*AABBCCDDEEFF*") for the <code>unifi_account</code> resources.  
+The provided mac address is used for both resources, <code>unifi_user</code> and <code>unifi_account</code>. UniFi currently allows several formats for WiFi MAC authentication but only one format for 802.1x control ("*AABBCCDDEEFF*"). To setup and use <code>unifi_account</code> resources for both, wired and wireless MAC authentication, the module converts the mac address to this format for username/password.  
   
 The attribute <code>fixed_ip</code> can only be used in environments with a UniFi Gateway or a UniFi layer-3 switch. Otherwise the resource will fail to create if not null.  
   
