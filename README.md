@@ -1,15 +1,18 @@
 ## Module 'terraform-module-unifi-client'
 
+> [!IMPORTANT]  
+> This module is only working with Unifi Community provider version up to 0.41.3 because of breaking changes in 0.41.4 (resource/data type <code>unifi_user</code> renamed to <code>unifi_client</code> and <code>unifi_user_group</code> renamed to <code>unifi_client_group</code>). Therefore, the repository for this module is archived and the module development is finished. A new module <code>terraform-module-unifi-endpoint</code> is under development to replace this module when using provider version 0.41.4 and above. If you want to continue to use this module please pin the provider version to a max. of 0.41.3 otherwise you will break your code.
+
 ### Description
 
-This module is intended to create and manage <code>unifi_user</code> resources (client devices) on a Unifi Network Controller (either stand-alone or hosted on a UCG/UDM) following my business needs and standards. Optionally the module can create an associated <code>unifi_account</code> resource for authentication/authorization/accounting (AAA) for wired or wireless networks using UniFi gateway's built-in RADIUS server. It's not possible by design to create a <code>unifi_account</code> resource only without creating a related <code>unifi_client</code> resource. The other way round, this dependency also ensures that <code>unifi_account</code> resources are deleted automatically if their related <code>unifi_client</code> resource is deleted.   
+This module is intended to create and manage <code>unifi_user</code> resources (client devices) on a Unifi Network Controller (either stand-alone or hosted on a UCG/UDM) following my business needs and standards. Optionally the module can create an associated <code>unifi_account</code> resource for authentication/authorization/accounting (AAA) for wired or wireless networks using UniFi gateway's built-in RADIUS server. It's not possible by design to create a <code>unifi_account</code> resource only without creating a related <code>unifi_user</code> resource. The other way round, this dependency also ensures that <code>unifi_account</code> resources are deleted automatically if their related <code>unifi_user</code> resource is deleted.   
 
 ### Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.14.0 |
-| <a name="requirement_unifi"></a> [ubiquiti-community\/unifi](#requirement\_ubiquiti-commpunity\_unifi) | >= 0.41.3 |
+| <a name="requirement_unifi"></a> [ubiquiti-community\/unifi](#requirement\_ubiquiti-commpunity\_unifi) | 0.41.3 |
 
 ### Resources
 
@@ -47,7 +50,7 @@ terraform {
   required_providers {
     unifi           = {
       source  = "ubiquiti-community/unifi"
-      version = ">= 0.41.3"
+      version = "= 0.41.3"
     }
     unifi-secondary-provider  = {
       <your secondary provider for UniFi resources>
@@ -92,7 +95,7 @@ terraform {
     }
     unifi-secondary-provider  = {
       source  = "ubiquiti-community/unifi"
-      version = ">= 0.41.3"
+      version = "0.41.3"
     }
   }
 }
